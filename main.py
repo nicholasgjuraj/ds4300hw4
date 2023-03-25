@@ -30,7 +30,8 @@ with GraphDatabase.driver(URI, auth=AUTH) as driver:
     df = pd.read_csv('./spotify.csv', index_col=0)
     sampled = df.sample(n=2500)
     sampled = sampled[sampled['artists'] != 'Regina Spektor']
-    sampled.update(df[df['artists'] == 'Regina Spektor'])
+    to_append = df[df['artists'] == 'Regina Spektor']
+    sampled = sampled.append(to_append)
     with driver.session(database="neo4j") as session:
         for track in sampled.iterrows():
             session.execute_write(create_track, track[1].to_dict())
